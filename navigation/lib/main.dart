@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const HomeScreen(),
         '/detail': (context) => const DetailScreen(data: 'Hello from Home!'),
         '/settings': (context) => const SettingsScreen(username: 'Guest'),
+        '/about': (context) => const AboutScreen(data: 'johndoe.com'),
       },
     );
   }
@@ -81,6 +82,18 @@ class HomeScreen extends StatelessWidget {
               ),
               child: const Text('Go to Settings'),
             ),
+            const SizedBox(height: 20),
+            // Tombol untuk named route ke AboutScreen
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/about');
+              },
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                textStyle: const TextStyle(fontSize: 16),
+              ),
+              child: const Text('Go to About (Named Route)'),
+            ),
           ],
         ),
       ),
@@ -127,6 +140,46 @@ class DetailScreen extends StatelessWidget {
     );
   }
 }
+
+class AboutScreen extends StatelessWidget {
+  final String data;
+
+  const AboutScreen({super.key, required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('About Screen'),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'About me: $data',
+              style: const TextStyle(fontSize: 18),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                textStyle: const TextStyle(fontSize: 16),
+              ),
+              child: const Text('Go Back'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 
 // Layar Pengaturan (SettingsScreen) - Tugas Tambahan
 class SettingsScreen extends StatelessWidget {

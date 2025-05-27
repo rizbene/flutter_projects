@@ -63,7 +63,7 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-// Layar Alur Pengaturan (SetupFlowScreen) dengan Nested Navigator
+// Layar Alur Pengaturan (SetupFlowScreen)
 class SetupFlowScreen extends StatefulWidget {
   const SetupFlowScreen({super.key});
 
@@ -72,17 +72,18 @@ class SetupFlowScreen extends StatefulWidget {
 }
 
 class _SetupFlowScreenState extends State<SetupFlowScreen> {
-  // Kunci untuk Navigator bersarang
   final _navigatorKey = GlobalKey<NavigatorState>();
 
-  // Fungsi untuk navigasi ke ConnectDeviceScreen
   void _onDeviceFound() {
     _navigatorKey.currentState!.pushNamed('connect_device');
   }
 
-  // Fungsi untuk menyelesaikan alur pengaturan
+  void _onConnectComplete() {
+    _navigatorKey.currentState!.pushNamed('confirm_device');
+  }
+
   void _completeSetup(BuildContext context) {
-    Navigator.pop(context); // Kembali ke HomeScreen
+    Navigator.pop(context);
   }
 
   @override
@@ -91,7 +92,6 @@ class _SetupFlowScreenState extends State<SetupFlowScreen> {
       appBar: AppBar(
         title: const Text('Setup Flow'),
         centerTitle: true,
-        // Tombol kembali untuk keluar dari SetupFlow
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -107,7 +107,10 @@ class _SetupFlowScreenState extends State<SetupFlowScreen> {
               page = FindDevicesScreen(onDeviceFound: _onDeviceFound);
               break;
             case 'connect_device':
-              page = ConnectDeviceScreen(onSetupComplete: () => _completeSetup(context));
+              page = ConnectDeviceScreen(onConnectComplete: _onConnectComplete);
+              break;
+            case 'confirm_device':
+              page = ConfirmDeviceScreen(onConfirm: () => _completeSetup(context));
               break;
             default:
               page = FindDevicesScreen(onDeviceFound: _onDeviceFound);
@@ -119,7 +122,7 @@ class _SetupFlowScreenState extends State<SetupFlowScreen> {
   }
 }
 
-// Layar Pencarian Perangkat (FindDevicesScreen)
+// Layar Pencarian Perangkat
 class FindDevicesScreen extends StatelessWidget {
   final VoidCallback onDeviceFound;
 
@@ -138,10 +141,6 @@ class FindDevicesScreen extends StatelessWidget {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: onDeviceFound,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-              textStyle: const TextStyle(fontSize: 16),
-            ),
             child: const Text('Device Found'),
           ),
         ],
@@ -150,11 +149,11 @@ class FindDevicesScreen extends StatelessWidget {
   }
 }
 
-// Layar Koneksi Perangkat (ConnectDeviceScreen)
+// Layar Koneksi Perangkat
 class ConnectDeviceScreen extends StatelessWidget {
-  final VoidCallback onSetupComplete;
+  final VoidCallback onConnectComplete;
 
-  const ConnectDeviceScreen({super.key, required this.onSetupComplete});
+  const ConnectDeviceScreen({super.key, required this.onConnectComplete});
 
   @override
   Widget build(BuildContext context) {
@@ -168,22 +167,44 @@ class ConnectDeviceScreen extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: onSetupComplete,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-              textStyle: const TextStyle(fontSize: 16),
-            ),
-            child: const Text('Complete Setup'),
+            onPressed: onConnectComplete,
+            child: const Text('Confirm Device'),
           ),
           const SizedBox(height: 10),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context); // Kembali ke FindDevicesScreen
-            },
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-              textStyle: const TextStyle(fontSize: 16),
-            ),
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Back'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Layar Konfirmasi Perangkat (sub-layar ketiga)
+class ConfirmDeviceScreen extends StatelessWidget {
+  final VoidCallback onConfirm;
+
+  const ConfirmDeviceScreen({super.key, required this.onConfirm});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            'Confirming Device Settings...',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: onConfirm,
+            child: const Text('Finish Setup'),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
             child: const Text('Back'),
           ),
         ],
